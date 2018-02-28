@@ -1,0 +1,133 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+	<style>
+		h1 { font-family: monospace;
+		font-size: 5rem;
+	}
+	</style>
+</head>
+	<body>
+		<h1 class="text">********</h1>
+	</body>
+</html>
+
+<script>
+window.onload = function () {
+	(function () {
+
+		// ***
+		// Call the function
+		// 'endwith' is the word you want to up with (same length as the word you started with)
+		// 'divname' is the class of the element where your start text is
+		// letterdelay is the time to move between letters
+		// 'cycledelay' is how quickly it cycles through the characters in each letter
+
+    	cycleChars(endswith='NONSENSE', divname='text', letterdelay=1200, cycledelay=20);
+
+    	function cycleChars(){
+
+	    	// get the div to change text inside
+	    	var div = getClass(divname);
+
+	    	//split 'endswith' to array so each letter sequence can end on the required final letter
+	    	var result = splitToarray(endswith);
+
+	    	//get the div text and split to array so each letter can be wrapped and therefore addressed and changed
+	    	var textarray = splitToarray(getClass('text').innerHTML);
+
+	    	// get length of array (number of letters)
+	    	var len = textarray.length;
+
+	    	// wrap each letter in div with a span and write it back to where it came from
+	    	div.innerHTML  = (wrapUp(textarray, 'span'));
+
+	    	// get children of div (letters wrapped in <span>s)
+	    	var kids = div.children;
+
+	    	// Do the stuff
+			loopIt (kids, letterdelay);
+
+
+
+		// *** SPECIFIC FUNCTIONS ***
+
+    	function loopIt (elem){
+    		// alter every child (letter) of the div in turn
+
+    		// 'i' has to be passed to the function like this. will not work properly if function content is just placed inside 'for' loop
+    		for (i =0; i < len; i++){
+    			f(i);
+    		}
+    		function f(i){
+    			setTimeout(function(){
+    				acTion(elem[i], i);
+    			}, letterdelay * i); // delays have to be offset (multiplied by 'i') otherwise all letters are cycled through simultaneouly.
+    		}
+    	}
+
+    	function acTion(elem, j){
+    		// cycle through characters (from '!'' to 'Z') in child element ('elem')using html entities. 33 to 90 are the codes for the entities cycled through. Change them if you want to cycle through a different set of html entities.
+    		 var i = 33, loop = 90;
+
+    		function f(){
+    		 	// write each html entity 
+    			elem.innerHTML ='&#' + i;
+    			
+    			if (i < loop){
+    			 	setTimeout (f, cycledelay);
+    			 	i++;
+    			} else {
+    			 	// and then throw in correct letter at the end
+    			 	// not sure that this is the tidiest way...
+    			 	elem.innerHTML =  result[j]; 
+    			 
+    			 	if (j == len-1){
+    			 		// if it's the last character then we're done. Remove all the span wraps of the letters
+    			 		div.innerHTML=endswith;
+    			 	}
+    			}
+			}
+    		setTimeout (f, cycledelay);
+    	}
+
+	} // cycleChars
+
+		// *** GENERAL PURPOSE FUNCTIONS ***
+
+		function wrapUp(array, tag){
+    		// wrap each array element with tag and put back into string
+    		var newarray = [];
+    		for (el in array){
+    			newel = '<' + tag +'>' + array[el] + '</' + tag + '>';
+    			newarray.push(newel);
+    		}
+    		return newarray.join(''); // without this the string will be returned with comma between elements
+    	}
+
+		function splitToarray(text){
+    		// split each character into an array element and call function to remove empty elements
+    		textsplit = text.split('');
+    		textsplit = removeSpaces(textsplit);
+    		return textsplit;
+    	}
+
+    	function removeSpaces(array){
+			// remove the elements containing empty (not necessary if you can  guarantee div won't contain spaces)
+			array = array.filter(function(str) {
+	    		return /\S/.test(str);
+	    	});
+	    	return array;
+		}
+
+        function getClass(el){
+		// Gets first appearance of class on page.
+            var el= document.getElementsByClassName(el);
+            var el = el[0];
+            return el;
+        } // getClass
+
+    }()); //function
+}; // onload
+</script>
